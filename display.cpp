@@ -88,7 +88,7 @@ void display_setup(void)
   display_inbox_setup();
   display_config_setup();
   
-
+  /*
   // TODO: Erase this code
   // Create dummy packet
   PACKET *pkt = (PACKET*) malloc(sizeof(PACKET));
@@ -104,8 +104,9 @@ void display_setup(void)
   pkt = (PACKET*) malloc(sizeof(PACKET));
   pkt->id = 121;
   strcpy((char*) pkt->msgpayload, "Hello world.");
-  pkt->msglen = strlen((char*)pkt->msgpayload);
+  pkt->msglen = strlen8((char*)pkt->msgpayload);
   txvr_add_inbox(pkt);
+  */
 }
 
 void display_next(void)
@@ -114,6 +115,8 @@ void display_next(void)
   {
     // Main Menu
     case 0:
+       if(currChoice == 0)
+         currChoice++;
        currChoice = (currChoice + 1) % 4; 
        break;       
     // Inbox  
@@ -126,7 +129,7 @@ void display_next(void)
       break;
     // Config  
     case 3:
-      currChoice = (currChoice + 1) % 4;
+      currChoice = (currChoice + 1) % 3;
       break;
     default:
       break;
@@ -179,18 +182,17 @@ void display_config_setup(void)
   tmpStr = "FREQ  ";
   memcpy(entries[3].choices[1].choice, tmpStr, 6);
   
-  tmpStr = "BRIGHT";
-  memcpy(entries[3].choices[2].choice, tmpStr, 6);
+//  tmpStr = "BRIGHT";
+//  memcpy(entries[3].choices[2].choice, tmpStr, 6);
   entries[3].choices[0].callback = &config_set_id_callback;
   entries[3].choices[1].callback = &config_set_freq_callback;
-  entries[3].choices[2].callback = &config_set_bright_callback;
+  //entries[3].choices[2].callback = &config_set_bright_callback;
   
-  display_addback(3,3);
+  display_addback(3,2);
 }
 
 void display_config(void)
 {
-  // TODO
   currEntry = 3;
   currChoice = 0;
   display_draw_entry(entries[currEntry]);
@@ -233,7 +235,6 @@ void display_inbox(void)
 
 void display_status(void)
 {
-  // TODO
 }
 
 void display_newmsg(void)

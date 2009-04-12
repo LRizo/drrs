@@ -7,6 +7,8 @@
 
 boolean inSetID;
 boolean inSetBright;
+boolean inSetFreq;
+
 char id_list[] = {'A','B','C','D'};
 uint8_t oldID;
 
@@ -20,18 +22,16 @@ void config_setup(void)
 
 void config_set_id_callback(void)
 {
-  // TODO
   config_next_id();
 }
 
 void config_set_freq_callback(void)
 {
-  // TODO
+  config_next_freq();
 }
 
 void config_set_bright_callback(void)
 {
-  // TODO
   inSetBright = true;
   config_next_bright();
 }
@@ -54,9 +54,44 @@ char config_get_text_id(void) {
   return id_list[config_get_id() & 0x3];
 }
 
+void config_next_freq(void)
+{
+  uint8_t freq = config_get_freq();
+  const uint8_t low = 0;
+  const uint8_t med = 37;
+  const uint8_t high = 50;
+  char msg[17];
+  
+  if(!inSetFreq)
+  {
+    inSetFreq = true;
+    memset(currDisplay, ' ', 32);
+    int len = snprintf(msg, 17, "Current:%s", (freq == med) ? "2.437GHz" : ((freq > med) ? "2.450GHz" : "2.400GHz"));
+    memcpy(currDisplay, msg, len);
+    sprintf(msg, "<BACK  NEW FREQ>");
+    memcpy(currDisplay + 16, msg, 16);
+  }
+  else
+  { 
+    uint8_t newFreq;
+    if(freq > med)
+      newFreq = low;
+    else if (freq < med)
+      newFreq = med;
+    else
+      newFreq = high;
+      
+    memset(currDisplay, ' ', 32);
+    int len = snprintf(msg, 17, "Current:%s", (freq == med) ? "2.437GHz" : ((freq > med) ? "2.450GHz" : "2.400GHz"));
+    memcpy(currDisplay, msg, len);
+    len = snprintf(msg, 17, "NewFreq:%s", (newFreq == med) ? "2.437GHz" : ((newFreq > med) ? "2.450GHz" : "2.400GHz"));
+    memcpy(currDisplay + 16, msg, len);
+    config_set_freq(newFreq);
+  }
+}
+
 void config_next_id(void)
 {
-  // TODO
   if(!inSetID)
   {
     inSetID = true;
@@ -102,6 +137,7 @@ void config_next_bright(void)
     config_set_bright(high);  
 }
 
+
 uint8_t config_get_freq(void)
 {
   return EEPROM.read(EEPROM_FREQ_ADDR);
@@ -109,11 +145,13 @@ uint8_t config_get_freq(void)
 
 void config_set_freq(uint8_t freqOffset)
 {
+  noInterrupts();
   uint8_t currFreq = config_get_freq();
   if (freqOffset != currFreq)
     EEPROM.write(EEPROM_FREQ_ADDR, freqOffset);
 
   txvr_set_frequency(freqOffset);
+  interrupts();
 }
 
 uint8_t config_get_bright(void)

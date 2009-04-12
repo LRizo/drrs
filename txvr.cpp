@@ -82,7 +82,7 @@ void txvr_setup (void)
   write_txvr_reg(0x06, 0x01);
 
   // Set frequency to 2400 MHz
-  txvr_set_frequency (0);
+  txvr_set_frequency (config_get_freq());
 
   // Set radio address width in SETUP_AW
   write_txvr_reg(0x03, 0x01);

@@ -3,6 +3,7 @@ extern int currChoice;
 extern int currEntry;
 extern boolean inSetID;
 extern boolean inSetBright;
+extern boolean inSetFreq;
 
 #define EEPROM_CONFIG_ADDR     0
 #define EEPROM_FREQ_ADDR       1
@@ -20,3 +21,4 @@ void config_set_id(uint8_t newId);
 void config_set_freq(uint8_t offset);
 void config_set_bright(uint8_t level);
 void config_next_bright(void);
+void config_next_freq(void);

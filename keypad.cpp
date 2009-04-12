@@ -153,6 +153,13 @@ void keypad_service(void)
      inSetID = false;
      display_back();
    }
+   else if((inSetFreq & 1) && keypad_val == 0x0F)
+     config_next_freq();
+   else if((inSetFreq & 1) && keypad_val == 0x0C)
+   {
+     inSetFreq = false;
+     display_back();
+   }
    else if((inSetBright & 1) && keypad_val == 0x0F)
      config_next_bright();
    else if((inSetBright & 1) && keypad_val == 0x0C)
