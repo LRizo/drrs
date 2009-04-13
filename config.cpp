@@ -11,6 +11,7 @@ boolean inSetFreq;
 
 char id_list[] = {'A','B','C','D'};
 uint8_t oldID;
+uint8_t oldFreq;
 
 void config_setup(void)
 {
@@ -56,14 +57,15 @@ char config_get_text_id(void) {
 
 void config_next_freq(void)
 {
-  uint8_t freq = config_get_freq();
+
   const uint8_t low = 0;
   const uint8_t med = 37;
   const uint8_t high = 50;
   char msg[17];
-  
+  uint8_t freq = config_get_freq();
   if(!inSetFreq)
   {
+    oldFreq = config_get_freq();
     inSetFreq = true;
     memset(currDisplay, ' ', 32);
     int len = snprintf(msg, 17, "Current:%s", (freq == med) ? "2.437GHz" : ((freq > med) ? "2.450GHz" : "2.400GHz"));
@@ -75,14 +77,23 @@ void config_next_freq(void)
   { 
     uint8_t newFreq;
     if(freq > med)
+    {
+      freq = low;
       newFreq = low;
+    }
     else if (freq < med)
+    {
+      freq = med;
       newFreq = med;
+    }
     else
+    {
+      freq = high;
       newFreq = high;
+    }
       
     memset(currDisplay, ' ', 32);
-    int len = snprintf(msg, 17, "Current:%s", (freq == med) ? "2.437GHz" : ((freq > med) ? "2.450GHz" : "2.400GHz"));
+    int len = snprintf(msg, 17, "Current:%s", (oldFreq == med) ? "2.437GHz" : ((oldFreq > med) ? "2.450GHz" : "2.400GHz"));
     memcpy(currDisplay, msg, len);
     len = snprintf(msg, 17, "NewFreq:%s", (newFreq == med) ? "2.437GHz" : ((newFreq > med) ? "2.450GHz" : "2.400GHz"));
     memcpy(currDisplay + 16, msg, len);

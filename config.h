@@ -4,6 +4,7 @@ extern int currEntry;
 extern boolean inSetID;
 extern boolean inSetBright;
 extern boolean inSetFreq;
+extern char id_list[];
 
 #define EEPROM_CONFIG_ADDR     0
 #define EEPROM_FREQ_ADDR       1

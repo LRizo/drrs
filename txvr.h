@@ -50,3 +50,4 @@ void process_ack_queue(void);
 void txvr_list_print(void);
 void txvr_submit_packet(PACKET * pkt);
 void txvr_add_inbox(PACKET * pkt);
+void txvr_print_pkt(PACKET * pkt);

@@ -1,8 +1,10 @@
 #include <EEPROM.h>
+#import <stdio.h>
 #import "WProgram.h"
 #import "txvr.h"
 #import "config.h"
 #import "display.h"
+
 
 uint8_t g_lastid;
 static DList pktList;  /* List used to keep track of normal packets we
@@ -244,8 +246,11 @@ static void txvr_handle_ack(PACKET * newPkt)
     if(DESTINATION(newPkt) != config_get_id())
     {
       dlist_ins_next(&ackList, dlist_head(&ackList), newPkt);     
-    } else {
-      free(newPkt); 
+    } 
+    // Else this ack packet is for us, put it in the inbox.
+    else {
+      digitalWrite(led_green, HIGH);
+      dlist_ins_next(&inboxList, dlist_head(&inboxList), newPkt);
     }  
 }
 
@@ -570,4 +575,23 @@ void process_ack_queue(void) {
   // Remove all elements from the list
   dlist_destroy(&ackList);
   dlist_init(&ackList, free);
+}
+
+void txvr_print_pkt(PACKET * pkt)
+{
+   if (pkt != NULL)
+   {
+     if(TYPE(pkt) == NORMAL)
+     {
+       uint8_t *ptr = currDisplay;
+       uint8_t len = snprintf((char*)currDisplay, 32, "%c: ", id_list[SENDER(pkt)]);
+       ptr += len;
+       memcpy(ptr, pkt->msgpayload, ((32 - len) < pkt->msglen) ? (32 - len) : pkt->msglen);
+     }  
+     else if(TYPE(pkt) == ACK)
+     {
+        uint8_t len = snprintf((char*)currDisplay, 31, "Message received by %c.", id_list[SENDER(pkt)]);
+        currDisplay[len] = ' ';
+     }
+   }
 }

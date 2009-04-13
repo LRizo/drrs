@@ -209,8 +209,7 @@ void display_show_currMsg(void)
       thisElement = dlist_next(thisElement);
       
    PACKET * pkt = (PACKET*)dlist_data(thisElement);
-   if (pkt != NULL)
-     memcpy(currDisplay, pkt->msgpayload, pkt->msglen);
+   txvr_print_pkt(pkt);
 }
 
 void display_inbox(void)
